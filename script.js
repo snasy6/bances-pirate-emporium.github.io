@@ -225,112 +225,107 @@ postButton.onclick = async()=>{
 
 
 
-
 // =====================
 // LOAD MESSAGES
 // =====================
 
 onValue(
 
-    ref(database,"messages"),
+ref(database,"messages"),
 
-    (snapshot)=>{
-
-
-        messagesBox.innerHTML = "";
+(snapshot)=>{
 
 
-
-        let messages = [];
-
+    messagesBox.innerHTML = "";
 
 
-        snapshot.forEach((child)=>{
+    let posts = [];
 
 
-            messages.push({
+    snapshot.forEach((child)=>{
 
-                id: child.key,
 
-                ...child.val()
+        posts.push({
 
-            });
+            id: child.key,
 
+            ...child.val()
 
         });
 
 
-
-        messages.sort((a,b)=>{
-
-
-            return b.createdAt - a.createdAt;
-
-
-        });
+    });
 
 
 
-
-        messages.forEach((msg)=>{
-
-
-            let adminButtons = "";
+    posts.sort((a,b)=>{
 
 
-
-            if(isAdmin){
-
-
-                adminButtons = `
-
-                <button onclick="deleteMessage('${msg.id}')">
-
-                🗑 Delete
-
-                </button>
-
-                `;
+        return b.createdAt - a.createdAt;
 
 
-            }
+    });
 
 
 
-            messagesBox.innerHTML += `
+    posts.forEach((post)=>{
 
-            <div class="post">
 
-            <b>🏴‍☠️ ${msg.username}</b>
+        let buttons = "";
 
-            <p>${msg.message}</p>
 
-            <small>
+        if(isAdmin){
 
-            ${new Date(msg.createdAt).toLocaleString()}
 
-            </small>
+            buttons = `
 
             <br>
 
-            ${adminButtons}
+            <button onclick="deleteMessage('${post.id}')">
 
-            </div>
+            🗑 Delete
+
+            </button>
 
             `;
 
 
-        });
-
-
-    }
-
-);
+        }
 
 
 
+        messagesBox.innerHTML += `
 
 
+        <div class="post">
+
+
+        <b>🏴‍☠️ ${post.username}</b>
+
+
+        <p>${post.message}</p>
+
+
+        <small>
+
+        ${new Date(post.createdAt).toLocaleString()}
+
+        </small>
+
+
+        ${buttons}
+
+
+        </div>
+
+
+        `;
+
+
+    });
+
+
+});
 // =====================
 // ADMIN DELETE
 // =====================
