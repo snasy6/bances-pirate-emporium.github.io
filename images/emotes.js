@@ -4,7 +4,7 @@
 // "shortcut": "image file"
 
 
-const emotes = {
+window.emotes = {
 
 
     // exapmle
