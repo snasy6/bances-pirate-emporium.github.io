@@ -67,44 +67,39 @@ const clearChatButton = document.getElementById("clearChatButton");
 // USER DATA
 
 let currentUser = null;
+
 let username = "";
+
 let isAdmin = false;
 
 
 
-// =========================
+// =====================
 // EMOTE SYSTEM
-// =========================
+// =====================
 
 function convertEmotes(text){
 
 
-    const emotes = {
+    if(!window.emotes){
 
+        return text;
 
-        ":ship:": "ship.gif",
-
-        ":pirate:": "pirate.gif",
-
-        ":skull:": "skull.gif",
-
-        ":lol:": "lol.gif",
-
-        ":fire:": "fire.gif"
-
-
-    };
+    }
 
 
 
-    for(let code in emotes){
+    for(let code in window.emotes){
+
+
+        let file = window.emotes[code];
 
 
         text = text.replaceAll(
 
             code,
 
-            `<img class="emote" src="smilies/${emotes[code]}">`
+            `<img class="emote" src="smilies/${file}">`
 
         );
 
@@ -120,28 +115,41 @@ function convertEmotes(text){
 
 
 
-// LOGIN CHECK
 
-onAuthStateChanged(auth, async (user)=>{
+// =====================
+// LOGIN CHECK
+// =====================
+
+
+onAuthStateChanged(auth, async(user)=>{
 
 
     if(!user){
 
+
         welcome.innerHTML = "⚠️ Please login";
+
 
         postButton.disabled = true;
 
+
         return;
 
+
     }
+
 
 
     currentUser = user;
 
 
+
     const userData = await get(
+
         ref(database,"users/"+user.uid)
+
     );
+
 
 
     if(userData.exists()){
@@ -150,22 +158,22 @@ onAuthStateChanged(auth, async (user)=>{
         const data = userData.val();
 
 
+
         username = data.username;
 
 
-        isAdmin = 
-        data.role === "admin" || 
+
+        isAdmin =
+
+        data.role === "admin" ||
+
         data.role === "owner";
 
 
 
-        console.log("USERNAME:", username);
-
-        console.log("ADMIN:", isAdmin);
-
-
 
         welcome.innerHTML =
+
         "🏴‍☠️ Welcome " + username;
 
 
@@ -174,14 +182,18 @@ onAuthStateChanged(auth, async (user)=>{
 
 
 
-        if(isAdmin){
+        if(isAdmin && adminPanel){
+
 
             adminPanel.style.display="block";
+
 
         }
 
 
     }
+
+
 
 });
 
@@ -189,59 +201,71 @@ onAuthStateChanged(auth, async (user)=>{
 
 
 
+
+
+// =====================
 // POST MESSAGE
+// =====================
+
 
 postButton.onclick = ()=>{
 
 
     if(!currentUser){
 
+
         alert("Login first!");
 
+
         return;
+
 
     }
 
 
 
-    const text =
-    messageBox.value.trim();
+    const text = messageBox.value.trim();
 
 
 
-    if(text===""){
+    if(text === ""){
+
 
         return;
+
 
     }
 
 
 
-    const newMessage =
-    push(ref(database,"messages"));
+    const newMessage = push(
+
+        ref(database,"messages")
+
+    );
 
 
 
     set(newMessage,{
 
 
-        userID:currentUser.uid,
+        userID: currentUser.uid,
 
 
-        username:username,
+        username: username,
 
 
-        message:text,
+        message: text,
 
 
-        createdAt:Date.now()
+        createdAt: Date.now()
 
 
     });
 
 
 
-    messageBox.value="";
+    messageBox.value = "";
 
 
 };
@@ -252,18 +276,25 @@ postButton.onclick = ()=>{
 
 
 
+
+// =====================
 // LOAD MESSAGES
+// =====================
+
 
 onValue(
+
 ref(database,"messages"),
 
 (snapshot)=>{
 
 
-    messagesBox.innerHTML="";
+
+    messagesBox.innerHTML = "";
 
 
-    let posts=[];
+
+    let posts = [];
 
 
 
@@ -272,9 +303,12 @@ ref(database,"messages"),
 
         posts.push({
 
-            id:child.key,
+
+            id: child.key,
+
 
             ...child.val()
+
 
         });
 
@@ -283,7 +317,6 @@ ref(database,"messages"),
 
 
 
-    // NEWEST FIRST
 
     posts.sort((a,b)=>{
 
@@ -299,7 +332,8 @@ ref(database,"messages"),
     posts.forEach((post)=>{
 
 
-        let buttons="";
+
+        let buttons = "";
 
 
 
@@ -308,18 +342,25 @@ ref(database,"messages"),
 
             buttons = `
 
+
             <br>
+
 
             <button onclick="deleteMessage('${post.id}')">
 
+
             🗑 Delete
 
+
             </button>
+
 
             `;
 
 
         }
+
+
 
 
 
@@ -333,7 +374,13 @@ ref(database,"messages"),
         <b>🏴‍☠️ ${post.username}</b>
 
 
-        <p>${convertEmotes(post.message)}</p>
+
+        <p>
+
+        ${convertEmotes(post.message)}
+
+        </p>
+
 
 
         <small>
@@ -343,7 +390,9 @@ ref(database,"messages"),
         </small>
 
 
+
         ${buttons}
+
 
 
         </div>
@@ -356,6 +405,7 @@ ref(database,"messages"),
     });
 
 
+
 });
 
 
@@ -364,20 +414,30 @@ ref(database,"messages"),
 
 
 
-// ADMIN DELETE
+
+// =====================
+// DELETE MESSAGE
+// =====================
+
 
 window.deleteMessage = function(id){
 
 
+
     if(!isAdmin){
 
+
         return;
+
 
     }
 
 
+
     remove(
+
         ref(database,"messages/"+id)
+
     );
 
 
@@ -389,7 +449,11 @@ window.deleteMessage = function(id){
 
 
 
-// ADMIN CLEAR CHAT
+
+// =====================
+// CLEAR CHAT
+// =====================
+
 
 if(clearChatButton){
 
@@ -399,7 +463,9 @@ clearChatButton.onclick = ()=>{
 
     if(!isAdmin){
 
+
         return;
+
 
     }
 
@@ -409,11 +475,14 @@ clearChatButton.onclick = ()=>{
 
 
         remove(
+
             ref(database,"messages")
+
         );
 
 
     }
+
 
 
 };
@@ -426,7 +495,12 @@ clearChatButton.onclick = ()=>{
 
 
 
+
+
+// =====================
 // LOGOUT
+// =====================
+
 
 logoutButton.onclick = ()=>{
 
@@ -440,9 +514,6 @@ logoutButton.onclick = ()=>{
 
 
     });
-
-
-};
 
 
 };
