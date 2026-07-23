@@ -305,7 +305,7 @@ ref(database,"messages"),
 
         <b>🏴‍☠️ ${post.username}</b>
 
-        <p>${convertEmotes(post.message)}</p>
+        <p>${post.message}</p>
 
 
         <small>
