@@ -3,6 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import {
     getDatabase,
     ref,
+    get,
     push,
     onValue
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -14,20 +15,24 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 
-// FIREBASE CONFIG
-
 const firebaseConfig = {
+
     apiKey: "AIzaSyC-3DzWj-EY8ycWAtibBDqNkzojalYRjbI",
+
     authDomain: "bances-pirate-emporium.firebaseapp.com",
+
     databaseURL: "https://bances-pirate-emporium-default-rtdb.firebaseio.com",
+
     projectId: "bances-pirate-emporium",
+
     storageBucket: "bances-pirate-emporium.firebasestorage.app",
+
     messagingSenderId: "193085375114",
+
     appId: "1:193085375114:web:4380e8157dc1d93d96a373"
+
 };
 
-
-// START FIREBASE
 
 const app = initializeApp(firebaseConfig);
 
@@ -36,40 +41,63 @@ const database = getDatabase(app);
 const auth = getAuth(app);
 
 
-// PAGE ELEMENTS
-
-const nameBox = document.getElementById("name");
+const welcome = document.getElementById("welcome");
 const messageBox = document.getElementById("message");
 const postButton = document.getElementById("postButton");
 const messagesBox = document.getElementById("messages");
+const logoutButton = document.getElementById("logoutButton");
+
 
 let currentUser = null;
+let username = null;
 
 
 // CHECK LOGIN
 
-onAuthStateChanged(auth, (user) => {
-
-    currentUser = user;
-
+onAuthStateChanged(auth, async (user) => {
 
     if (user) {
 
-        console.log("Logged in as:", user.email);
+        currentUser = user;
 
-        if(postButton){
-            postButton.disabled = false;
+
+        const userSnap = await get(
+            ref(database, "users/" + user.uid)
+        );
+
+
+        if (userSnap.exists()) {
+
+            username = userSnap.val().username;
+
+            welcome.innerHTML =
+            "🏴‍☠️ Welcome " + username;
+
+        } else {
+
+            welcome.innerHTML =
+            "Logged in, but profile missing";
+
         }
+
+
+        postButton.disabled = false;
+
 
     } else {
 
-        console.log("Not logged in");
 
-        if(postButton){
-            postButton.disabled = true;
-        }
+        currentUser = null;
 
-        alert("You must login before posting!");
+        username = null;
+
+
+        welcome.innerHTML =
+        "⚠️ Please login to post";
+
+
+        postButton.disabled = true;
+
 
     }
 
@@ -78,12 +106,10 @@ onAuthStateChanged(auth, (user) => {
 
 // POST MESSAGE
 
-if(postButton){
-
 postButton.addEventListener("click", () => {
 
 
-    if(!currentUser){
+    if (!currentUser) {
 
         alert("Login first!");
 
@@ -92,14 +118,12 @@ postButton.addEventListener("click", () => {
     }
 
 
-    const name = nameBox.value.trim();
-
-    const message = messageBox.value.trim();
+    let message = messageBox.value.trim();
 
 
-    if(name === "" || message === ""){
+    if (message === "") {
 
-        alert("Enter your name and message!");
+        alert("Write a message!");
 
         return;
 
@@ -108,56 +132,44 @@ postButton.addEventListener("click", () => {
 
     push(ref(database,"messages"), {
 
-        name:name,
+        username: username,
 
-        message:message,
+        message: message,
 
-        email:currentUser.email,
-
-        time:new Date().toLocaleString()
+        time: new Date().toLocaleString()
 
     });
 
 
-    messageBox.value="";
+    messageBox.value = "";
 
 
 });
 
-}
+
+// LOAD MESSAGES
+
+onValue(ref(database,"messages"), (snapshot)=>{
 
 
-// DISPLAY MESSAGES
-
-const messagesRef = ref(database,"messages");
-
-
-onValue(messagesRef,(snapshot)=>{
-
-
-    if(!messagesBox) return;
-
-
-    messagesBox.innerHTML="";
+    messagesBox.innerHTML = "";
 
 
     snapshot.forEach((child)=>{
 
 
-        const data = child.val();
+        let data = child.val();
 
 
         messagesBox.innerHTML += `
 
         <div class="post">
 
-            <b>🏴‍☠️ ${data.name}</b>
+        <b>🏴‍☠️ ${data.username}</b>
 
-            <br>
+        <p>${data.message}</p>
 
-            <small>${data.time}</small>
-
-            <p>${data.message}</p>
+        <small>${data.time}</small>
 
         </div>
 
@@ -168,3 +180,24 @@ onValue(messagesRef,(snapshot)=>{
 
 
 });
+
+
+// LOGOUT
+
+if(logoutButton){
+
+logoutButton.onclick = ()=>{
+
+
+    signOut(auth).then(()=>{
+
+
+        window.location.href="login.html";
+
+
+    });
+
+
+};
+
+}
