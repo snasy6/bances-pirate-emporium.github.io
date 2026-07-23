@@ -1,5 +1,4 @@
-
-import { initializeApp } 
+import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
@@ -21,7 +20,9 @@ import {
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 
-// FIREBASE CONFIG
+// =====================
+// FIREBASE
+// =====================
 
 const firebaseConfig = {
 
@@ -42,31 +43,37 @@ const firebaseConfig = {
 };
 
 
-// START FIREBASE
-
 const app = initializeApp(firebaseConfig);
 
 const database = getDatabase(app);
 
 const auth = getAuth(app);
-alert("Firebase script started");
 
 
 
-// ELEMENTS
+// =====================
+// HTML ELEMENTS
+// =====================
 
 const welcome = document.getElementById("welcome");
+
 const messageBox = document.getElementById("message");
+
 const postButton = document.getElementById("postButton");
+
 const messagesBox = document.getElementById("messages");
+
 const logoutButton = document.getElementById("logoutButton");
 
 const adminPanel = document.getElementById("adminPanel");
+
 const clearChatButton = document.getElementById("clearChatButton");
 
 
 
-// USER DATA
+// =====================
+// USER VARIABLES
+// =====================
 
 let currentUser = null;
 
@@ -77,51 +84,8 @@ let isAdmin = false;
 
 
 // =====================
-// EMOTE SYSTEM
+// LOGIN
 // =====================
-
-function convertEmotes(text){
-
-
-    if(!window.emotes){
-
-        return text;
-
-    }
-
-
-
-    for(let code in window.emotes){
-
-
-        let file = window.emotes[code];
-
-
-        text = text.replaceAll(
-
-            code,
-
-            `<img class="emote" src="smilies/${file}">`
-
-        );
-
-
-    }
-
-
-    return text;
-
-
-}
-
-
-
-
-
-// =====================
-// LOGIN CHECK
-// =====================
-
 
 onAuthStateChanged(auth, async(user)=>{
 
@@ -129,14 +93,19 @@ onAuthStateChanged(auth, async(user)=>{
     if(!user){
 
 
-        welcome.innerHTML = "⚠️ Please login";
+        currentUser = null;
 
+        username = "";
+
+        isAdmin = false;
+
+
+        welcome.innerHTML = "⚠️ Please login";
 
         postButton.disabled = true;
 
 
         return;
-
 
     }
 
@@ -146,18 +115,18 @@ onAuthStateChanged(auth, async(user)=>{
 
 
 
-    const userData = await get(
+    const userSnap = await get(
 
-        ref(database,"users/"+user.uid)
+        ref(database, "users/" + user.uid)
 
     );
 
 
 
-    if(userData.exists()){
+    if(userSnap.exists()){
 
 
-        const data = userData.val();
+        const data = userSnap.val();
 
 
 
@@ -173,7 +142,6 @@ onAuthStateChanged(auth, async(user)=>{
 
 
 
-
         welcome.innerHTML =
 
         "🏴‍☠️ Welcome " + username;
@@ -186,9 +154,7 @@ onAuthStateChanged(auth, async(user)=>{
 
         if(isAdmin && adminPanel){
 
-
-            adminPanel.style.display="block";
-
+            adminPanel.style.display = "block";
 
         }
 
@@ -196,11 +162,7 @@ onAuthStateChanged(auth, async(user)=>{
     }
 
 
-
 });
-
-
-
 
 
 
@@ -209,38 +171,32 @@ onAuthStateChanged(auth, async(user)=>{
 // POST MESSAGE
 // =====================
 
-
-postButton.onclick = ()=>{
+postButton.onclick = async()=>{
 
 
     if(!currentUser){
 
-
         alert("Login first!");
 
-
         return;
-
 
     }
 
 
 
-    const text = messageBox.value.trim();
+    let text = messageBox.value.trim();
 
 
 
     if(text === ""){
 
-
         return;
-
 
     }
 
 
 
-    const newMessage = push(
+    let messageRef = push(
 
         ref(database,"messages")
 
@@ -248,20 +204,15 @@ postButton.onclick = ()=>{
 
 
 
-    set(newMessage,{
-
+    await set(messageRef,{
 
         userID: currentUser.uid,
 
-
         username: username,
-
 
         message: text,
 
-
         createdAt: Date.now()
-
 
     });
 
@@ -269,11 +220,7 @@ postButton.onclick = ()=>{
 
     messageBox.value = "";
 
-
 };
-
-
-
 
 
 
@@ -285,61 +232,122 @@ postButton.onclick = ()=>{
 
 onValue(
 
-ref(database,"messages"),
+    ref(database,"messages"),
 
-(snapshot)=>{
-
-
-    messagesBox.innerHTML = "";
+    (snapshot)=>{
 
 
-    let posts = [];
+        messagesBox.innerHTML = "";
 
 
 
-    snapshot.forEach((child)=>{
+        let messages = [];
 
 
-        posts.push({
+
+        snapshot.forEach((child)=>{
 
 
-            id: child.key,
+            messages.push({
 
+                id: child.key,
 
-            ...child.val()
+                ...child.val()
+
+            });
 
 
         });
 
 
-    });
+
+        messages.sort((a,b)=>{
+
+
+            return b.createdAt - a.createdAt;
+
+
+        });
 
 
 
 
-
-// =====================
-// DELETE MESSAGE
-// =====================
+        messages.forEach((msg)=>{
 
 
-window.deleteMessage = function(id){
+            let adminButtons = "";
 
 
 
-    if(!isAdmin){
+            if(isAdmin){
 
 
-        return;
+                adminButtons = `
+
+                <button onclick="deleteMessage('${msg.id}')">
+
+                🗑 Delete
+
+                </button>
+
+                `;
+
+
+            }
+
+
+
+            messagesBox.innerHTML += `
+
+            <div class="post">
+
+            <b>🏴‍☠️ ${msg.username}</b>
+
+            <p>${msg.message}</p>
+
+            <small>
+
+            ${new Date(msg.createdAt).toLocaleString()}
+
+            </small>
+
+            <br>
+
+            ${adminButtons}
+
+            </div>
+
+            `;
+
+
+        });
 
 
     }
 
+);
+
+
+
+
+
+// =====================
+// ADMIN DELETE
+// =====================
+
+window.deleteMessage = function(id){
+
+
+    if(!isAdmin){
+
+        return;
+
+    }
 
 
     remove(
 
-        ref(database,"messages/"+id)
+        ref(database,"messages/" + id)
 
     );
 
@@ -350,51 +358,40 @@ window.deleteMessage = function(id){
 
 
 
-
-
-
 // =====================
-// CLEAR CHAT
+// ADMIN CLEAR CHAT
 // =====================
-
 
 if(clearChatButton){
 
 
-clearChatButton.onclick = ()=>{
+    clearChatButton.onclick = ()=>{
 
 
-    if(!isAdmin){
+        if(!isAdmin){
+
+            return;
+
+        }
 
 
-        return;
+        if(confirm("Delete all messages?")){
 
 
-    }
+            remove(
+
+                ref(database,"messages")
+
+            );
 
 
-
-    if(confirm("Delete all messages?")){
-
-
-        remove(
-
-            ref(database,"messages")
-
-        );
+        }
 
 
-    }
-
-
-
-};
+    };
 
 
 }
-
-
-
 
 
 
@@ -404,19 +401,10 @@ clearChatButton.onclick = ()=>{
 // LOGOUT
 // =====================
 
-
 logoutButton.onclick = ()=>{
 
 
-    signOut(auth)
-
-    .then(()=>{
-
-
-        window.location.href="login.html";
-
-
-    });
+    signOut(auth);
 
 
 };
