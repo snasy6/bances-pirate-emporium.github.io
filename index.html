@@ -12,12 +12,13 @@
 
 <body>
 
+
 <div class="board">
 
 
 <h1>🏴‍☠️ Bances Pirate Emporium 🏴‍☠️</h1>
 
-<h2>Public Pirate Message Board</h2>
+<h2>Pirate Message Board</h2>
 
 
 <div class="account">
@@ -37,16 +38,15 @@
 </div>
 
 
-<hr>
-
 
 <h3 id="welcome">
-Checking login...
+Checking account...
 </h3>
 
 
+
 <textarea 
-id="message" 
+id="message"
 placeholder="Write your message..."
 ></textarea>
 
@@ -54,6 +54,26 @@ placeholder="Write your message..."
 <button id="postButton">
 Post Message
 </button>
+
+
+
+<!-- ADMIN ONLY -->
+
+<div id="adminPanel" style="display:none;">
+
+
+<hr>
+
+<h2>⚓ Admin Panel</h2>
+
+
+<button id="clearChatButton">
+🧹 Clear Active Chat
+</button>
+
+
+</div>
+
 
 
 <hr>
@@ -64,9 +84,10 @@ Post Message
 
 <div id="messages">
 
-Loading messages...
+Loading...
 
 </div>
+
 
 
 </div>
