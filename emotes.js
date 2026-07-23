@@ -7,7 +7,7 @@
 window.emotes = {
 
 
-    ":captin_angry:": "my_fuckng_crew.jpg",
+    ":captin_angry:": "my_fucking_crew.jpg",
 
 
     ":pirate:": "pirate.gif"
