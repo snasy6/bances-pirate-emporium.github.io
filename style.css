@@ -1,13 +1,19 @@
 body {
+
     background: #001122;
+
     color: white;
+
     font-family: Verdana, Arial, sans-serif;
+
 }
+
 
 
 .board {
 
     width: 700px;
+
     max-width: 90%;
 
     margin: 40px auto;
@@ -21,6 +27,7 @@ body {
 }
 
 
+
 h1 {
 
     text-align: center;
@@ -30,11 +37,13 @@ h1 {
 }
 
 
+
 h2 {
 
     color: #00ccff;
 
 }
+
 
 
 input, textarea {
@@ -54,11 +63,13 @@ input, textarea {
 }
 
 
+
 textarea {
 
     height: 120px;
 
 }
+
 
 
 button {
@@ -78,11 +89,13 @@ button {
 }
 
 
+
 button:hover {
 
     background: #66ffbb;
 
 }
+
 
 
 .post {
@@ -98,8 +111,24 @@ button:hover {
 }
 
 
+
 small {
 
     color: #aaa;
+
+}
+
+
+
+
+/* 🏴‍☠️ Custom Emotes */
+
+.emote {
+
+    width: 32px;
+
+    height: 32px;
+
+    vertical-align: middle;
 
 }
