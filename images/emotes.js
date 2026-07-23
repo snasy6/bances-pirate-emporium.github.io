@@ -12,6 +12,8 @@ window.emotes = {
 
     ":captin_angry:" : "my_fuckng_crew.jpg",
 
+    ":pirate:" : "pirate.gif",
+
 
 
 
