@@ -7,24 +7,12 @@
 const emotes = {
 
 
-    // Ships
-    ":ship:" : "ship.gif",
+    // exapmle
+    //":ship:" : "ship.gif",
+
+    ":captin_angry:" : "my_fuckng_crew.jpg",
 
 
-    // Pirates
-    ":pirate:" : "pirate.gif",
-
-
-    // Funny
-    ":lol:" : "lol.gif",
-
-
-    // Fire
-    ":fire:" : "fire.gif",
-
-
-    // Skeleton
-    ":skull:" : "skull.gif"
 
 
 };
