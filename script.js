@@ -7,25 +7,23 @@ import {
     onValue
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+import {
+    getAuth,
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// YOUR FIREBASE SETTINGS
+
+// FIREBASE CONFIG
 
 const firebaseConfig = {
-
     apiKey: "AIzaSyC-3DzWj-EY8ycWAtibBDqNkzojalYRjbI",
-
     authDomain: "bances-pirate-emporium.firebaseapp.com",
-
     databaseURL: "https://bances-pirate-emporium-default-rtdb.firebaseio.com",
-
     projectId: "bances-pirate-emporium",
-
     storageBucket: "bances-pirate-emporium.firebasestorage.app",
-
     messagingSenderId: "193085375114",
-
     appId: "1:193085375114:web:4380e8157dc1d93d96a373"
-
 };
 
 
@@ -35,72 +33,121 @@ const app = initializeApp(firebaseConfig);
 
 const database = getDatabase(app);
 
+const auth = getAuth(app);
 
-// GET PAGE ELEMENTS
 
-const nameInput = document.getElementById("name");
+// PAGE ELEMENTS
 
-const messageInput = document.getElementById("message");
-
+const nameBox = document.getElementById("name");
+const messageBox = document.getElementById("message");
 const postButton = document.getElementById("postButton");
+const messagesBox = document.getElementById("messages");
 
-const messagesDiv = document.getElementById("messages");
+let currentUser = null;
 
 
-// SEND MESSAGE
+// CHECK LOGIN
+
+onAuthStateChanged(auth, (user) => {
+
+    currentUser = user;
+
+
+    if (user) {
+
+        console.log("Logged in as:", user.email);
+
+        if(postButton){
+            postButton.disabled = false;
+        }
+
+    } else {
+
+        console.log("Not logged in");
+
+        if(postButton){
+            postButton.disabled = true;
+        }
+
+        alert("You must login before posting!");
+
+    }
+
+});
+
+
+// POST MESSAGE
+
+if(postButton){
 
 postButton.addEventListener("click", () => {
 
 
-    let name = nameInput.value.trim();
+    if(!currentUser){
 
-    let message = messageInput.value.trim();
-
-
-    if (name === "" || message === "") {
-
-        alert("Please enter your pirate name and message!");
+        alert("Login first!");
 
         return;
 
     }
 
 
-    push(ref(database, "messages"), {
+    const name = nameBox.value.trim();
 
-        name: name,
+    const message = messageBox.value.trim();
 
-        message: message,
 
-        time: new Date().toLocaleString()
+    if(name === "" || message === ""){
+
+        alert("Enter your name and message!");
+
+        return;
+
+    }
+
+
+    push(ref(database,"messages"), {
+
+        name:name,
+
+        message:message,
+
+        email:currentUser.email,
+
+        time:new Date().toLocaleString()
 
     });
 
 
-    messageInput.value = "";
+    messageBox.value="";
 
 
 });
 
-
-// SHOW MESSAGES
-
-const messagesRef = ref(database, "messages");
+}
 
 
-onValue(messagesRef, (snapshot) => {
+// DISPLAY MESSAGES
+
+const messagesRef = ref(database,"messages");
 
 
-    messagesDiv.innerHTML = "";
+onValue(messagesRef,(snapshot)=>{
 
 
-    snapshot.forEach((child) => {
+    if(!messagesBox) return;
 
 
-        let data = child.val();
+    messagesBox.innerHTML="";
 
 
-        messagesDiv.innerHTML += `
+    snapshot.forEach((child)=>{
+
+
+        const data = child.val();
+
+
+        messagesBox.innerHTML += `
 
         <div class="post">
 
