@@ -50,6 +50,7 @@ const database = getDatabase(app);
 const auth = getAuth(app);
 
 
+
 // ELEMENTS
 
 const welcome = document.getElementById("welcome");
@@ -62,11 +63,61 @@ const adminPanel = document.getElementById("adminPanel");
 const clearChatButton = document.getElementById("clearChatButton");
 
 
+
 // USER DATA
 
 let currentUser = null;
 let username = "";
 let isAdmin = false;
+
+
+
+// =========================
+// EMOTE SYSTEM
+// =========================
+
+function convertEmotes(text){
+
+
+    const emotes = {
+
+
+        ":ship:": "ship.gif",
+
+        ":pirate:": "pirate.gif",
+
+        ":skull:": "skull.gif",
+
+        ":lol:": "lol.gif",
+
+        ":fire:": "fire.gif"
+
+
+    };
+
+
+
+    for(let code in emotes){
+
+
+        text = text.replaceAll(
+
+            code,
+
+            `<img class="emote" src="smilies/${emotes[code]}">`
+
+        );
+
+
+    }
+
+
+    return text;
+
+
+}
+
+
 
 
 // LOGIN CHECK
@@ -102,7 +153,10 @@ onAuthStateChanged(auth, async (user)=>{
         username = data.username;
 
 
-        isAdmin = data.role === "admin";
+        isAdmin = 
+        data.role === "admin" || 
+        data.role === "owner";
+
 
 
         console.log("USERNAME:", username);
@@ -130,6 +184,8 @@ onAuthStateChanged(auth, async (user)=>{
     }
 
 });
+
+
 
 
 
@@ -168,13 +224,18 @@ postButton.onclick = ()=>{
 
     set(newMessage,{
 
+
         userID:currentUser.uid,
+
 
         username:username,
 
+
         message:text,
 
+
         createdAt:Date.now()
+
 
     });
 
@@ -188,6 +249,9 @@ postButton.onclick = ()=>{
 
 
 
+
+
+
 // LOAD MESSAGES
 
 onValue(
@@ -197,7 +261,6 @@ ref(database,"messages"),
 
 
     messagesBox.innerHTML="";
-
 
 
     let posts=[];
@@ -224,9 +287,12 @@ ref(database,"messages"),
 
     posts.sort((a,b)=>{
 
+
         return b.createdAt - a.createdAt;
 
+
     });
+
 
 
 
@@ -257,6 +323,7 @@ ref(database,"messages"),
 
 
 
+
         messagesBox.innerHTML += `
 
 
@@ -266,7 +333,7 @@ ref(database,"messages"),
         <b>🏴‍☠️ ${post.username}</b>
 
 
-        <p>${post.message}</p>
+        <p>${convertEmotes(post.message)}</p>
 
 
         <small>
@@ -285,10 +352,13 @@ ref(database,"messages"),
         `;
 
 
+
     });
 
 
 });
+
+
 
 
 
@@ -312,6 +382,8 @@ window.deleteMessage = function(id){
 
 
 };
+
+
 
 
 
@@ -353,6 +425,7 @@ clearChatButton.onclick = ()=>{
 
 
 
+
 // LOGOUT
 
 logoutButton.onclick = ()=>{
@@ -367,6 +440,9 @@ logoutButton.onclick = ()=>{
 
 
     });
+
+
+};
 
 
 };
