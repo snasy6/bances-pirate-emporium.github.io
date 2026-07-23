@@ -50,6 +50,8 @@ const database = getDatabase(app);
 
 const auth = getAuth(app);
 
+console.log("EMOTES:", window.emotes);
+
 
 
 // =====================
