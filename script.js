@@ -227,7 +227,38 @@ postButton.onclick = async()=>{
 
 
 
+// =====================
+// EMOTES
+// =====================
 
+function convertEmotes(text){
+
+    if(!window.emotes){
+
+        return text;
+
+    }
+
+
+    for(let code in window.emotes){
+
+        let file = window.emotes[code];
+
+
+        text = text.replaceAll(
+
+            code,
+
+            `<img class="emote" src="${file}">`
+
+        );
+
+    }
+
+
+    return text;
+
+}
 // =====================
 // LOAD MESSAGES
 // =====================
