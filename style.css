@@ -132,3 +132,26 @@ small {
     vertical-align: middle;
 
 }
+.vaultImage {
+
+width: 200px;
+
+max-height: 200px;
+
+object-fit: cover;
+
+border: 3px solid #00ccff;
+
+}
+
+
+#mediaGrid {
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(220px,1fr));
+
+gap:20px;
+
+}
