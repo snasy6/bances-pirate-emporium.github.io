@@ -1,19 +1,26 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
     getDatabase,
     ref,
     get,
     push,
+    set,
+    remove,
     onValue
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 import {
     getAuth,
     onAuthStateChanged,
     signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+
+// FIREBASE CONFIG
 
 const firebaseConfig = {
 
@@ -34,6 +41,8 @@ const firebaseConfig = {
 };
 
 
+// START FIREBASE
+
 const app = initializeApp(firebaseConfig);
 
 const database = getDatabase(app);
@@ -41,62 +50,81 @@ const database = getDatabase(app);
 const auth = getAuth(app);
 
 
+// ELEMENTS
+
 const welcome = document.getElementById("welcome");
 const messageBox = document.getElementById("message");
 const postButton = document.getElementById("postButton");
 const messagesBox = document.getElementById("messages");
 const logoutButton = document.getElementById("logoutButton");
 
+const adminPanel = document.getElementById("adminPanel");
+const clearChatButton = document.getElementById("clearChatButton");
+
+
+// USER DATA
 
 let currentUser = null;
-let username = null;
+let username = "";
+let isAdmin = false;
 
 
-// CHECK LOGIN
+// LOGIN CHECK
 
-onAuthStateChanged(auth, async (user) => {
-
-    if (user) {
-
-        currentUser = user;
+onAuthStateChanged(auth, async (user)=>{
 
 
-        const userSnap = await get(
-            ref(database, "users/" + user.uid)
-        );
+    if(!user){
+
+        welcome.innerHTML = "⚠️ Please login";
+
+        postButton.disabled = true;
+
+        return;
+
+    }
 
 
-        if (userSnap.exists()) {
+    currentUser = user;
 
-            username = userSnap.val().username;
 
-            welcome.innerHTML =
-            "🏴‍☠️ Welcome " + username;
+    const userData = await get(
+        ref(database,"users/"+user.uid)
+    );
 
-        } else {
 
-            welcome.innerHTML =
-            "Logged in, but profile missing";
+    if(userData.exists()){
 
-        }
+
+        const data = userData.val();
+
+
+        username = data.username;
+
+
+        isAdmin = data.role === "admin";
+
+
+        console.log("USERNAME:", username);
+
+        console.log("ADMIN:", isAdmin);
+
+
+
+        welcome.innerHTML =
+        "🏴‍☠️ Welcome " + username;
+
 
 
         postButton.disabled = false;
 
 
-    } else {
 
+        if(isAdmin){
 
-        currentUser = null;
+            adminPanel.style.display="block";
 
-        username = null;
-
-
-        welcome.innerHTML =
-        "⚠️ Please login to post";
-
-
-        postButton.disabled = true;
+        }
 
 
     }
@@ -104,12 +132,13 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 
+
 // POST MESSAGE
 
-postButton.addEventListener("click", () => {
+postButton.onclick = ()=>{
 
 
-    if (!currentUser) {
+    if(!currentUser){
 
         alert("Login first!");
 
@@ -118,60 +147,140 @@ postButton.addEventListener("click", () => {
     }
 
 
-    let message = messageBox.value.trim();
+
+    const text =
+    messageBox.value.trim();
 
 
-    if (message === "") {
 
-        alert("Write a message!");
+    if(text===""){
 
         return;
 
     }
 
 
-    push(ref(database,"messages"), {
 
-        username: username,
+    const newMessage =
+    push(ref(database,"messages"));
 
-        message: message,
 
-        time: new Date().toLocaleString()
+
+    set(newMessage,{
+
+        userID:currentUser.uid,
+
+        username:username,
+
+        message:text,
+
+        createdAt:Date.now()
 
     });
 
 
-    messageBox.value = "";
+
+    messageBox.value="";
 
 
-});
+};
+
+
 
 
 // LOAD MESSAGES
 
-onValue(ref(database,"messages"), (snapshot)=>{
+onValue(
+ref(database,"messages"),
+
+(snapshot)=>{
 
 
-    messagesBox.innerHTML = "";
+    messagesBox.innerHTML="";
+
+
+
+    let posts=[];
+
 
 
     snapshot.forEach((child)=>{
 
 
-        let data = child.val();
+        posts.push({
+
+            id:child.key,
+
+            ...child.val()
+
+        });
+
+
+    });
+
+
+
+    // NEWEST FIRST
+
+    posts.sort((a,b)=>{
+
+        return b.createdAt - a.createdAt;
+
+    });
+
+
+
+    posts.forEach((post)=>{
+
+
+        let buttons="";
+
+
+
+        if(isAdmin){
+
+
+            buttons = `
+
+            <br>
+
+            <button onclick="deleteMessage('${post.id}')">
+
+            🗑 Delete
+
+            </button>
+
+            `;
+
+
+        }
+
 
 
         messagesBox.innerHTML += `
 
+
         <div class="post">
 
-        <b>🏴‍☠️ ${data.username}</b>
 
-        <p>${data.message}</p>
+        <b>🏴‍☠️ ${post.username}</b>
 
-        <small>${data.time}</small>
+
+        <p>${post.message}</p>
+
+
+        <small>
+
+        ${new Date(post.createdAt).toLocaleString()}
+
+        </small>
+
+
+        ${buttons}
+
 
         </div>
+
 
         `;
 
@@ -182,14 +291,76 @@ onValue(ref(database,"messages"), (snapshot)=>{
 });
 
 
-// LOGOUT
 
-if(logoutButton){
+
+
+// ADMIN DELETE
+
+window.deleteMessage = function(id){
+
+
+    if(!isAdmin){
+
+        return;
+
+    }
+
+
+    remove(
+        ref(database,"messages/"+id)
+    );
+
+
+};
+
+
+
+
+
+// ADMIN CLEAR CHAT
+
+if(clearChatButton){
+
+
+clearChatButton.onclick = ()=>{
+
+
+    if(!isAdmin){
+
+        return;
+
+    }
+
+
+
+    if(confirm("Delete all messages?")){
+
+
+        remove(
+            ref(database,"messages")
+        );
+
+
+    }
+
+
+};
+
+
+}
+
+
+
+
+
+// LOGOUT
 
 logoutButton.onclick = ()=>{
 
 
-    signOut(auth).then(()=>{
+    signOut(auth)
+
+    .then(()=>{
 
 
         window.location.href="login.html";
@@ -199,5 +370,3 @@ logoutButton.onclick = ()=>{
 
 
 };
-
-}
