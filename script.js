@@ -8,16 +8,24 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 
-// FIREBASE CONFIG
+// YOUR FIREBASE SETTINGS
 
 const firebaseConfig = {
+
     apiKey: "AIzaSyC-3DzWj-EY8ycWAtibBDqNkzojalYRjbI",
+
     authDomain: "bances-pirate-emporium.firebaseapp.com",
+
     databaseURL: "https://bances-pirate-emporium-default-rtdb.firebaseio.com",
+
     projectId: "bances-pirate-emporium",
+
     storageBucket: "bances-pirate-emporium.firebasestorage.app",
+
     messagingSenderId: "193085375114",
+
     appId: "1:193085375114:web:4380e8157dc1d93d96a373"
+
 };
 
 
@@ -28,20 +36,25 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 
-// GET HTML ELEMENTS
+// GET PAGE ELEMENTS
 
-const nameBox = document.getElementById("name");
-const messageBox = document.getElementById("message");
-const messagesBox = document.getElementById("messages");
+const nameInput = document.getElementById("name");
+
+const messageInput = document.getElementById("message");
+
 const postButton = document.getElementById("postButton");
 
+const messagesDiv = document.getElementById("messages");
 
-// POST MESSAGE
 
-function postMessage() {
+// SEND MESSAGE
 
-    const name = nameBox.value.trim();
-    const message = messageBox.value.trim();
+postButton.addEventListener("click", () => {
+
+
+    let name = nameInput.value.trim();
+
+    let message = messageInput.value.trim();
 
 
     if (name === "" || message === "") {
@@ -56,23 +69,21 @@ function postMessage() {
     push(ref(database, "messages"), {
 
         name: name,
+
         message: message,
+
         time: new Date().toLocaleString()
 
     });
 
 
-    messageBox.value = "";
-
-}
+    messageInput.value = "";
 
 
-// BUTTON CLICK
-
-postButton.addEventListener("click", postMessage);
+});
 
 
-// LOAD MESSAGES
+// SHOW MESSAGES
 
 const messagesRef = ref(database, "messages");
 
@@ -80,16 +91,16 @@ const messagesRef = ref(database, "messages");
 onValue(messagesRef, (snapshot) => {
 
 
-    messagesBox.innerHTML = "";
+    messagesDiv.innerHTML = "";
 
 
     snapshot.forEach((child) => {
 
 
-        const data = child.val();
+        let data = child.val();
 
 
-        messagesBox.innerHTML += `
+        messagesDiv.innerHTML += `
 
         <div class="post">
 
