@@ -21,6 +21,7 @@
 <h2>Pirate Message Board</h2>
 
 
+
 <div class="account">
 
 <a href="login.html">🔑 Login</a>
@@ -29,11 +30,14 @@
 
 <a href="signup.html">🏴 Create Account</a>
 
+
 <br><br>
+
 
 <button id="logoutButton">
 🚪 Logout
 </button>
+
 
 </div>
 
@@ -45,30 +49,47 @@ Checking account...
 
 
 
-<textarea 
+
+
+<!-- MESSAGE AREA -->
+
+
+<textarea
+
 id="message"
-placeholder="Write your message..."
+
+placeholder="Write your message... Use :ship: :pirate:"
+
 ></textarea>
 
 
+
 <button id="postButton">
+
 Post Message
+
 </button>
 
 
 
-<!-- ADMIN ONLY -->
+
+
+<!-- ADMIN AREA -->
+
 
 <div id="adminPanel" style="display:none;">
 
 
 <hr>
 
+
 <h2>⚓ Admin Panel</h2>
 
 
 <button id="clearChatButton">
+
 🧹 Clear Active Chat
+
 </button>
 
 
@@ -76,26 +97,44 @@ Post Message
 
 
 
+
+
 <hr>
+
 
 
 <h2>Latest Messages</h2>
 
 
+
 <div id="messages">
 
-Loading...
+Loading messages...
 
 </div>
 
 
 
+
 </div>
 
+
+
+
+
+<!-- LOAD EMOTES FIRST -->
+
+<script src="smilies/emotes.js"></script>
+
+
+
+<!-- LOAD MAIN WEBSITE -->
 
 <script type="module" src="script.js"></script>
 
 
+
 </body>
+
 
 </html>
