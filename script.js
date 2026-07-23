@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-import { 
+import {
     getDatabase,
     ref,
     push,
@@ -8,24 +8,16 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 
-// YOUR FIREBASE SETTINGS
+// FIREBASE CONFIG
 
 const firebaseConfig = {
-
-  apiKey: "AIzaSyC-3DzWj-EY8ycWAtibBDqNkzojalYRjbI",
-
-  authDomain: "bances-pirate-emporium.firebaseapp.com",
-
-  databaseURL: "https://bances-pirate-emporium-default-rtdb.firebaseio.com",
-
-  projectId: "bances-pirate-emporium",
-
-  storageBucket: "bances-pirate-emporium.firebasestorage.app",
-
-  messagingSenderId: "193085375114",
-
-  appId: "1:193085375114:web:4380e8157dc1d93d96a373"
-
+    apiKey: "AIzaSyC-3DzWj-EY8ycWAtibBDqNkzojalYRjbI",
+    authDomain: "bances-pirate-emporium.firebaseapp.com",
+    databaseURL: "https://bances-pirate-emporium-default-rtdb.firebaseio.com",
+    projectId: "bances-pirate-emporium",
+    storageBucket: "bances-pirate-emporium.firebasestorage.app",
+    messagingSenderId: "193085375114",
+    appId: "1:193085375114:web:4380e8157dc1d93d96a373"
 };
 
 
@@ -36,74 +28,78 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 
-// SEND MESSAGE
+// GET HTML ELEMENTS
 
-window.postMessage = function(){
-
-
-    let name = document.getElementById("name").value;
-
-    let message = document.getElementById("message").value;
+const nameBox = document.getElementById("name");
+const messageBox = document.getElementById("message");
+const messagesBox = document.getElementById("messages");
+const postButton = document.getElementById("postButton");
 
 
-    if(name === "" || message === "") {
+// POST MESSAGE
 
-        alert("Please enter your name and message!");
+function postMessage() {
+
+    const name = nameBox.value.trim();
+    const message = messageBox.value.trim();
+
+
+    if (name === "" || message === "") {
+
+        alert("Please enter your pirate name and message!");
 
         return;
 
     }
 
 
-    push(ref(database,"messages"), {
+    push(ref(database, "messages"), {
 
-        name:name,
-
-        message:message,
-
-        time:new Date().toLocaleString()
+        name: name,
+        message: message,
+        time: new Date().toLocaleString()
 
     });
 
 
-    document.getElementById("message").value="";
+    messageBox.value = "";
+
+}
 
 
-};
+// BUTTON CLICK
+
+postButton.addEventListener("click", postMessage);
 
 
+// LOAD MESSAGES
 
-// DISPLAY MESSAGES
-
-const messages = ref(database,"messages");
-
-
-onValue(messages,(snapshot)=>{
+const messagesRef = ref(database, "messages");
 
 
-    let box=document.getElementById("messages");
+onValue(messagesRef, (snapshot) => {
 
 
-    box.innerHTML="";
+    messagesBox.innerHTML = "";
 
 
-    snapshot.forEach((child)=>{
+    snapshot.forEach((child) => {
 
 
-        let data=child.val();
+        const data = child.val();
 
 
-        box.innerHTML += `
+        messagesBox.innerHTML += `
 
         <div class="post">
 
-        <b>🏴‍☠️ ${data.name}</b>
+            <b>🏴‍☠️ ${data.name}</b>
 
-        <br>
+            <br>
 
-        <small>${data.time}</small>
+            <small>${data.time}</small>
 
-        <p>${data.message}</p>
+            <p>${data.message}</p>
 
         </div>
 
