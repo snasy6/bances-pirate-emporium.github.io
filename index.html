@@ -1,37 +1,81 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Bances Pirate Emporium - Message Board</title>
+
+    <title>Bances Pirate Emporium</title>
+
     <link rel="stylesheet" href="style.css">
+
 </head>
+
 
 <body>
 
+
 <div class="board">
 
+
     <h1>🏴‍☠️ Bances Pirate Emporium 🏴‍☠️</h1>
-    <h2>Public Message Board</h2>
 
-    <input id="name" type="text" placeholder="Pirate Name">
+    <h2>Public Pirate Message Board</h2>
 
-    <textarea id="message" placeholder="Write your message..."></textarea>
 
-    <button id="postButton">
-        Post Message
-    </button>
+    <div class="account">
+
+        <a href="login.html">🔑 Login</a>
+
+        |
+
+        <a href="signup.html">🏴 Create Account</a>
+
+    </div>
+
 
     <hr>
 
-    <h2>Messages</h2>
+
+    <h3>Post a Message</h3>
+
+
+    <input 
+        id="name" 
+        placeholder="Pirate Name"
+    >
+
+
+    <textarea 
+        id="message" 
+        placeholder="Write your message..."
+    ></textarea>
+
+
+    <button id="postButton">
+
+        Post Message
+
+    </button>
+
+
+    <hr>
+
+
+    <h2>Latest Messages</h2>
+
 
     <div id="messages">
+
         Loading messages...
+
     </div>
+
 
 </div>
 
 
 <script type="module" src="script.js"></script>
 
+
 </body>
+
 </html>
