@@ -245,14 +245,13 @@ function convertEmotes(text){
         let file = window.emotes[code];
 
 
-        text = text.replaceAll(
+       text = text.replaceAll(
 
-            code,
+        emote,
 
-            `<img class="emote" src="smilies/${file}">`
+        `<img class="emote" src="${image}">`
 
         );
-
     }
 
 
