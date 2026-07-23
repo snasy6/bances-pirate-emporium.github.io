@@ -5,7 +5,8 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
 
 getAuth,
-createUserWithEmailAndPassword
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword
 
 }
 
@@ -54,7 +55,15 @@ const database = getDatabase(app);
 
 
 
-document.getElementById("signupButton").onclick = () => {
+// SIGN UP
+
+const signupButton = document.getElementById("signupButton");
+
+
+if(signupButton){
+
+
+signupButton.onclick = ()=>{
 
 
 const username =
@@ -74,26 +83,20 @@ createUserWithEmailAndPassword(
 auth,
 email,
 password
-
 )
 
-
-.then((userCredential)=>{
-
-
-const user = userCredential.user;
-
+.then((result)=>{
 
 
 return set(
 
-ref(database,"users/" + user.uid),
+ref(database,"users/"+result.user.uid),
 
 {
 
-username: username,
+username:username,
 
-email: email,
+email:email,
 
 role:"user"
 
@@ -102,14 +105,13 @@ role:"user"
 );
 
 
-
 })
 
 
 .then(()=>{
 
 
-alert("Welcome aboard!");
+alert("Account created!");
 
 window.location.href="index.html";
 
@@ -117,7 +119,7 @@ window.location.href="index.html";
 })
 
 
-.catch((error)=>{
+.catch(error=>{
 
 
 alert(error.message);
@@ -127,3 +129,60 @@ alert(error.message);
 
 
 };
+
+
+}
+
+
+
+// LOGIN
+
+const loginButton = document.getElementById("loginButton");
+
+
+if(loginButton){
+
+
+loginButton.onclick = ()=>{
+
+
+const email =
+document.getElementById("email").value;
+
+
+const password =
+document.getElementById("password").value;
+
+
+
+signInWithEmailAndPassword(
+auth,
+email,
+password
+)
+
+
+.then(()=>{
+
+
+alert("Welcome back!");
+
+window.location.href="index.html";
+
+
+})
+
+
+.catch(error=>{
+
+
+alert(error.message);
+
+
+});
+
+
+};
+
+
+}
