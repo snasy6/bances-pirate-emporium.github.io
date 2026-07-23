@@ -377,8 +377,7 @@ ref(database,"messages"),
 
         <p>
 
-        ${convertEmotes(post.message)}
-
+        ${post.message}
         </p>
 
 
