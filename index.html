@@ -1,9 +1,35 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <title>Bances Pirate Emporium - Message Board</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
 <body>
 
-<h1>My First Heading</h1>
-<p>My first paragraph.</p>
+<div class="board">
+
+<h1>🏴‍☠️ Bances Pirate Emporium</h1>
+<h2>Message Board</h2>
+
+<div class="post-box">
+
+<input id="name" placeholder="Your pirate name">
+
+<textarea id="message" placeholder="Write your message..."></textarea>
+
+<button onclick="postMessage()">Post Message</button>
+
+</div>
+
+<hr>
+
+<div id="messages">
+</div>
+
+</div>
+
+<script src="script.js"></script>
 
 </body>
 </html>
