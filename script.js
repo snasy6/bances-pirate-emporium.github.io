@@ -281,7 +281,6 @@ postButton.onclick = ()=>{
 // LOAD MESSAGES
 // =====================
 
-
 onValue(
 
 ref(database,"messages"),
@@ -289,9 +288,7 @@ ref(database,"messages"),
 (snapshot)=>{
 
 
-
     messagesBox.innerHTML = "";
-
 
 
     let posts = [];
@@ -315,6 +312,91 @@ ref(database,"messages"),
 
     });
 
+
+
+    posts.sort((a,b)=>{
+
+
+        return b.createdAt - a.createdAt;
+
+
+    });
+
+
+
+    posts.forEach((post)=>{
+
+
+        let buttons = "";
+
+
+
+        if(isAdmin){
+
+
+            buttons = `
+
+            <br>
+
+            <button onclick="deleteMessage('${post.id}')">
+
+            🗑 Delete
+
+            </button>
+
+            `;
+
+
+        }
+
+
+
+        messagesBox.innerHTML += `
+
+
+        <div class="post">
+
+
+        <b>🏴‍☠️ ${post.username}</b>
+
+
+        <p>${post.message}</p>
+
+
+        <small>
+
+        ${new Date(post.createdAt).toLocaleString()}
+
+        </small>
+
+
+        ${buttons}
+
+
+        </div>
+
+
+        `;
+
+
+    });
+
+
+},
+
+(error)=>{
+
+
+    messagesBox.innerHTML =
+    "❌ Firebase error loading messages";
+
+
+    console.log(error);
+
+
+}
+
+);
 
 
 
