@@ -1,12 +1,15 @@
 body {
-    background: #00111f;
+    background: #001122;
     color: white;
     font-family: Verdana, Arial, sans-serif;
 }
 
+
 .board {
 
     width: 700px;
+    max-width: 90%;
+
     margin: 40px auto;
 
     background: #222;
@@ -15,87 +18,88 @@ body {
 
     padding: 20px;
 
-    box-shadow: 0 0 20px black;
 }
 
 
 h1 {
 
-    text-align:center;
+    text-align: center;
 
-    color:#00ff99;
+    color: #00ff99;
 
 }
 
 
 h2 {
 
-    color:#00ccff;
+    color: #00ccff;
 
 }
 
 
 input, textarea {
 
-    width:95%;
+    width: 95%;
 
-    padding:10px;
+    padding: 10px;
 
-    margin:8px;
+    margin: 8px 0;
 
-    background:black;
+    background: black;
 
-    color:white;
+    color: white;
 
-    border:2px solid #00ccff;
+    border: 2px solid #00ccff;
 
 }
 
 
 textarea {
 
-    height:120px;
+    height: 120px;
 
 }
 
 
 button {
 
-    background:#00ff99;
+    background: #00ff99;
 
-    border:2px solid black;
+    color: black;
 
-    padding:12px 25px;
+    padding: 12px 25px;
 
-    cursor:pointer;
+    border: 2px solid black;
 
-    font-weight:bold;
+    cursor: pointer;
+
+    font-weight: bold;
 
 }
 
 
 button:hover {
 
-    background:#66ffbb;
+    background: #66ffbb;
 
 }
 
 
 .post {
 
-    background:#333;
+    background: #333;
 
-    border-left:5px solid #00ff99;
+    border-left: 5px solid #00ff99;
 
-    padding:10px;
+    padding: 10px;
 
-    margin-top:15px;
+    margin-top: 15px;
 
 }
 
 
 small {
 
-    color:#aaa;
+    color: #aaa;
 
 }
